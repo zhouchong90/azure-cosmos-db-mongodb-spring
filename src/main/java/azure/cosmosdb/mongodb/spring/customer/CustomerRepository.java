@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,15 @@
  * limitations under the License.
  */
 
-package azure.cosmosdb.mongodb.spring;
+package azure.cosmosdb.mongodb.spring.customer;
 
-import org.springframework.data.annotation.Id;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import org.springframework.data.repository.reactive.RxJava2CrudRepository;
 
-public class Customer {
+public interface CustomerRepository extends RxJava2CrudRepository<Customer, String> {
 
-	@Id
-	private String id;
+	Single<Customer> findByFirstName(String firstName);
 
-	private String firstName;
-	private String lastName;
-
-	public Customer() {
-	}
-
-	public Customer(String firstName, String lastName) {
-		this.firstName = firstName;
-		this.lastName = lastName;
-	}
-
-	@Override
-	public String toString() {
-		return String.format("Customer[id=%s, firstName='%s', lastName='%s']", id,
-				firstName, lastName);
-	}
-
+	Flowable<Customer> findByLastName(String lastName);
 }

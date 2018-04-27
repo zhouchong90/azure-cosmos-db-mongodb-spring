@@ -16,51 +16,57 @@
 
 package azure.cosmosdb.mongodb.spring;
 
+import azure.cosmosdb.mongodb.spring.customer.Customer;
+import azure.cosmosdb.mongodb.spring.customer.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
 @SpringBootApplication
+@EnableReactiveMongoRepositories
 public class SampleMongoApplication implements CommandLineRunner {
 
+	public static void main(String[] args) {
+		SpringApplication.run(SampleMongoApplication.class, args);
+	}
+
 	@Autowired
-	private ReadSecondaryCustomerRepository readRepository;
-	@Autowired
-	private ReadPrimaryCustomerRepository writeRepository;
+	private CustomerRepository customerRepository;
 
 	public void run(String... args) throws Exception {
 
 		// Use WriteRepository to do some write operations
-		this.writeRepository.deleteAll();
+		this.customerRepository.deleteAll().blockingAwait();
 
 		// save a couple of customers
-		this.writeRepository.save(new Customer("Alice", "Smith"));
-		this.writeRepository.save(new Customer("Bob", "Smith"));
+		this.customerRepository.save(new Customer("Alice", "Smith"));
+		this.customerRepository.save(new Customer("Bob", "Smith"));
 
 		// Use ReadRepository to do some read operations
 		// fetch all customers
 		System.out.println("Customers found with findAll():");
 		System.out.println("-------------------------------");
-		for (Customer customer : this.readRepository.findAll()) {
-			System.out.println(customer);
-		}
+
+		customerRepository.findAll()
+						  .blockingForEach(customer-> System.out.println(customer));
+
 		System.out.println();
 
 		// fetch an individual customer
 		System.out.println("Customer found with findByFirstName('Alice'):");
 		System.out.println("--------------------------------");
-		System.out.println(this.readRepository.findByFirstName("Alice"));
+		this.customerRepository.findByFirstName("Alice")
+							   .subscribe(customer -> System.out.println(customer));
 
 		System.out.println("Customers found with findByLastName('Smith'):");
 		System.out.println("--------------------------------");
-		for (Customer customer : this.readRepository.findByLastName("Smith")) {
-			System.out.println(customer);
-		}
+
+		customerRepository.findByLastName("Smith")
+						  .blockingForEach(customer -> System.out.println(customer));
 	}
 
-	public static void main(String[] args) {
-		SpringApplication.run(SampleMongoApplication.class, args);
-	}
+
 
 }
