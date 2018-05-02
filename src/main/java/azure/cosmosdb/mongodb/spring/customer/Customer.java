@@ -16,16 +16,27 @@
 
 package azure.cosmosdb.mongodb.spring.customer;
 
+import azure.cosmosdb.mongodb.spring.views.Views;
+import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
+@Data
+@EqualsAndHashCode(of = {"firstName", "lastName"})
 public class Customer {
 
 	@Id
 	private String id;
 
+	//TODO Audit created
+
+	@JsonView(Views.Internal.class)
 	private String firstName;
+
+	@JsonView(Views.Internal.class)
 	private String lastName;
 
 	public Customer() {

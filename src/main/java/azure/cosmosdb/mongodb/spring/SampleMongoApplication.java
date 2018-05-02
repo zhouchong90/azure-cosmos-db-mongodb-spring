@@ -26,47 +26,9 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
 
 @SpringBootApplication
 @EnableReactiveMongoRepositories
-public class SampleMongoApplication implements CommandLineRunner {
+public class SampleMongoApplication{
 
 	public static void main(String[] args) {
 		SpringApplication.run(SampleMongoApplication.class, args);
 	}
-
-	@Autowired
-	private CustomerRepository customerRepository;
-
-	public void run(String... args) throws Exception {
-
-		// Use WriteRepository to do some write operations
-		this.customerRepository.deleteAll().blockingAwait();
-
-		// save a couple of customers
-		this.customerRepository.save(new Customer("Alice", "Smith"));
-		this.customerRepository.save(new Customer("Bob", "Smith"));
-
-		// Use ReadRepository to do some read operations
-		// fetch all customers
-		System.out.println("Customers found with findAll():");
-		System.out.println("-------------------------------");
-
-		customerRepository.findAll()
-						  .blockingForEach(customer-> System.out.println(customer));
-
-		System.out.println();
-
-		// fetch an individual customer
-		System.out.println("Customer found with findByFirstName('Alice'):");
-		System.out.println("--------------------------------");
-		this.customerRepository.findByFirstName("Alice")
-							   .subscribe(customer -> System.out.println(customer));
-
-		System.out.println("Customers found with findByLastName('Smith'):");
-		System.out.println("--------------------------------");
-
-		customerRepository.findByLastName("Smith")
-						  .blockingForEach(customer -> System.out.println(customer));
-	}
-
-
-
 }

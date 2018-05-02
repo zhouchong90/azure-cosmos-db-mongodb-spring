@@ -22,7 +22,7 @@ import org.springframework.data.repository.reactive.RxJava2CrudRepository;
 
 public interface CustomerRepository extends RxJava2CrudRepository<Customer, String> {
 
-	Single<Customer> findByFirstName(String firstName);
+	Flowable<Customer> findByFirstName(Single<String> firstName);
 
-	Flowable<Customer> findByLastName(String lastName);
+	Flowable<Customer> findByLastName(Single<String> lastName);
 }
